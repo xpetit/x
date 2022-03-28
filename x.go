@@ -20,3 +20,10 @@ func Reverse[S ~[]E, E any](s S) {
 		s[i], s[j] = s[j], s[i]
 	}
 }
+
+// Assert panics with the given message if cond is false.
+func Assert(message string, cond bool) {
+	if !cond {
+		panic("assertion failed: " + message)
+	}
+}
