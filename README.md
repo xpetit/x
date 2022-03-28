@@ -12,3 +12,7 @@ func Ptr[T any](v T) *T
 // Reverse reverses a slice.
 func Reverse[S ~[]E, E any](s S)
 ```
+
+Other useful generic functions can be found at:
+- https://pkg.go.dev/golang.org/x/exp/slices
+- https://pkg.go.dev/golang.org/x/exp/maps
