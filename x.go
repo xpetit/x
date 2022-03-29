@@ -1,5 +1,7 @@
 package x
 
+import "golang.org/x/exp/constraints"
+
 // Check panics if one of its arguments is a non-nil error.
 func Check(a ...any) {
 	for _, v := range a {
@@ -26,4 +28,20 @@ func Assert(message string, cond bool) {
 	if !cond {
 		panic("assertion failed: " + message)
 	}
+}
+
+// Min returns the smaller of x or y.
+func Min[T constraints.Integer](x, y T) T {
+	if x < y {
+		return x
+	}
+	return y
+}
+
+// Max returns the larger of x or y.
+func Max[T constraints.Integer](x, y T) T {
+	if x > y {
+		return x
+	}
+	return y
 }
