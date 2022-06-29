@@ -19,6 +19,12 @@ func Check2[T any](a T, err error) T {
 	return a
 }
 
+// Check3 panics if its third argument is a non-nil error.
+func Check3[T1, T2 any](a T1, b T2, err error) (T1, T2) {
+	Check(err)
+	return a, b
+}
+
 // Ptr returns a pointer to v.
 func Ptr[T any](v T) *T {
 	return &v
