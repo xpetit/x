@@ -6,13 +6,17 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-// Check panics if one of its arguments is a non-nil error.
-func Check(a ...any) {
-	for _, v := range a {
-		if err, ok := v.(error); ok && err != nil {
-			panic(err)
-		}
+// Check panics if its argument is a non-nil error.
+func Check(err error) {
+	if err != nil {
+		panic(err)
 	}
+}
+
+// Check2 panics if its second argument is a non-nil error.
+func Check2[T any](a T, err error) T {
+	Check(err)
+	return a
 }
 
 // Ptr returns a pointer to v.
