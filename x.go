@@ -69,7 +69,7 @@ func Max[T constraints.Integer](x, y T) T {
 func MultiLines(s string) string {
 	lines := strings.Split(s, "\n")
 	if len(lines) < 3 {
-		panic("FmtLines: expected raw string enclosed with new lines")
+		panic("MultiLines: expected raw string enclosed with new lines")
 	}
 	lines = lines[1 : len(lines)-1]
 	padding := 0
