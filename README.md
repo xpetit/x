@@ -29,7 +29,7 @@ Assert(hex.EncodeToString(sha2.Sum(nil)) == "4eaea32f59cde4dc635fbc42161031d13e1
 This snippet downloads an archive, unpacks it and verifies its checksum, all in one go.
 Any error causes a panic, cascading errors are stacked and each reader is closed as expected.
 
-[Package documentation](https://pkg.go.dev/github.com/xpetit/x)
+[Package documentation](https://pkg.go.dev/github.com/xpetit/x/v2)
 
 Other useful generic functions can be found at:
 
