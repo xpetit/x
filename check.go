@@ -43,6 +43,7 @@ func Assert(cond bool, a ...any) {
 			panic("assertion failed")
 		}
 		s := "assertion failed: " + fmt.Sprintln(a...)
-		panic(s[:len(s)-1])
+		s = s[:len(s)-1] // trims final newline
+		panic(s)
 	}
 }
