@@ -3,7 +3,19 @@ package x
 import (
 	"errors"
 	"io"
+	"os"
+
+	"golang.org/x/term"
 )
+
+func StdinIsPipe() bool {
+	mode := C2(os.Stdin.Stat()).Mode()
+	return mode&os.ModeNamedPipe != 0 && mode&os.ModeCharDevice == 0
+}
+
+func StdoutIsTerminal() bool {
+	return term.IsTerminal(int(os.Stdout.Fd()))
+}
 
 // Closing is a shortcut, instead of writing:
 //
