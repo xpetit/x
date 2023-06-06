@@ -1,13 +1,44 @@
 package x
 
 import (
+	"fmt"
+	"io"
 	"math"
 	"strconv"
 	"strings"
+	"sync"
+	"unicode"
 	"unicode/utf8"
 
+	"golang.org/x/exp/constraints"
 	"golang.org/x/exp/slices"
+	"golang.org/x/text/unicode/rangetable"
 )
+
+var (
+	once  sync.Once
+	cache map[rune]string
+)
+
+// InitUnicodeCategory inits the cache for UnicodeCategory
+// It is exported so that the user can trigger cache building instead of waiting for the first call to UnicodeCategory
+func InitUnicodeCategory() {
+	once.Do(func() {
+		cache = map[rune]string{}
+		for category, v := range unicode.Categories {
+			if len(category) == 2 {
+				rangetable.Visit(v, func(r rune) { cache[r] = category })
+			}
+		}
+	})
+}
+
+// UnicodeCategory returns the code point General Category.
+// It is a two bytes string with major & minor e.g. "Lu", "Zs", "Nd"...
+func UnicodeCategory(r rune) (name string) {
+	InitUnicodeCategory()
+	return cache[r]
+}
 
 func AppendUnicodeBar(b []byte, width int) []byte {
 	b = slices.Grow(b, 3*((7+width)/8))
@@ -22,6 +53,84 @@ func AppendUnicodeBar(b []byte, width int) []byte {
 
 func UnicodeBar(width int) string {
 	return string(AppendUnicodeBar(nil, width))
+}
+
+func keyString[T comparable](a T) string {
+	switch a := any(a).(type) {
+	case string:
+		return a
+
+	case rune: // make it uncluttered, remove unecessary quotes and backslashes
+		s := strconv.QuoteRune(a)
+		switch s {
+		case `' '`:
+			return s
+		case `'\''`:
+			return `'`
+		case `'\\'`:
+			return `\`
+		}
+		return s[1 : len(s)-1] // remove quotes, the rune is safely escaped anyway
+	}
+
+	return fmt.Sprint(a)
+}
+
+// BarChart prints a bar chart with unicode block elements to help visualize m in a compact way.
+// If maxItems > -1, it limits the amount of lines to display.
+// Example with the number of online players for 8 games (data from steamcharts):
+//
+//	100%  2405676  Total (8 entries)
+//	 50%  1195540  Counter-Strike: Global Offensive [██████      ]
+//	 20%   473708  Dota 2                           [██▍         ]
+//	 11%   275232  Apex Legends                     [█▍          ]
+//	 10%   246234  PUBG: BATTLEGROUNDS              [█▎          ]
+//	  5%   123765  Grand Theft Auto V               [▋           ]
+//	  3%    64405  Team Fortress 2                  [▍           ]
+//	  1%    21228  The Sims™ 4                      [▏           ]
+//	  0%     5564  Sekiro™: Shadows Die Twice       [            ]
+func BarChart[M ~map[K]V, K comparable, V constraints.Integer](w io.Writer, m M, maxItems int) {
+	var total V
+	keys := make([]K, 0, len(m))
+	for k, v := range m {
+		total += v
+		keys = append(keys, k)
+	}
+
+	slices.SortFunc(keys, func(a, b K) bool {
+		if m[a] == m[b] {
+			return Less(a, b)
+		}
+		return m[a] > m[b]
+	})
+
+	if maxItems >= 0 && maxItems < len(keys) {
+		keys = keys[:maxItems]
+	}
+
+	var maxKeyWidth int
+	keyStrings := make([]string, len(keys))
+	for i, k := range keys {
+		s := keyString(k)
+		keyStrings[i] = s
+		if l := len([]rune(s)); l > maxKeyWidth {
+			maxKeyWidth = l
+		}
+	}
+
+	fmt.Fprintf(w, "100%%  %d  Total (%d entries)\n", total, len(m))
+	maxValueWidth := 1 + int(math.Log10(float64(total)))
+	for i, k := range keys {
+		v := m[k]
+		const maxBarWidth = 12 * 8 // 12 terminal characters for 100% values
+		barWidth := int(math.Round(maxBarWidth * float64(v) / float64(total)))
+		fmt.Fprintf(w, "%3.f%%  %*d  %-*s [%-*s]\n",
+			100*float64(v)/float64(total),
+			maxValueWidth, v,
+			maxKeyWidth, keyStrings[i],
+			12, UnicodeBar(barWidth),
+		)
+	}
 }
 
 // AppendByte appends the string form of the byte count i,
