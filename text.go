@@ -97,11 +97,17 @@ func BarChart[M ~map[K]V, K comparable, V constraints.Integer](w io.Writer, m M,
 		keys = append(keys, k)
 	}
 
-	slices.SortFunc(keys, func(a, b K) bool {
-		if m[a] == m[b] {
-			return Less(a, b)
+	slices.SortFunc(keys, func(a, b K) int {
+		if m[a] != m[b] {
+			return int(m[b] - m[a])
 		}
-		return m[a] > m[b]
+		if a == b {
+			return 0
+		}
+		if Less(a, b) {
+			return -1
+		}
+		return 1
 	})
 
 	if maxItems >= 0 && maxItems < len(keys) {
