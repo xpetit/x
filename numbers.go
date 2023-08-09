@@ -3,29 +3,21 @@ package x
 import (
 	"crypto/rand"
 	"math/big"
-
-	"golang.org/x/exp/constraints"
 )
 
-type Number interface {
-	constraints.Integer | constraints.Float
-}
-
-// Min returns the smaller of x or y.
-func Min[T Number](x, y T) T {
-	if x < y {
-		return x
+type (
+	Integer interface {
+		~uint8 | ~uint16 | ~uint32 | ~uint64 |
+			~int8 | ~int16 | ~int32 | ~int64 |
+			int | ~uint | ~uintptr
 	}
-	return y
-}
-
-// Max returns the larger of x or y.
-func Max[T Number](x, y T) T {
-	if x > y {
-		return x
+	Float interface {
+		~float32 | ~float64
 	}
-	return y
-}
+	Number interface {
+		Integer | Float
+	}
+)
 
 func Clamp[T Number](val, min, max T) T {
 	if val < min {
@@ -37,6 +29,6 @@ func Clamp[T Number](val, min, max T) T {
 }
 
 // Intn returns a uniform random value in [0, n). It panics if n <= 0 or n > math.MaxInt64.
-func Intn[T constraints.Integer](n T) T {
+func Intn[T Integer](n T) T {
 	return T(C2(rand.Int(rand.Reader, big.NewInt(int64(n)))).Int64())
 }

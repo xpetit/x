@@ -34,10 +34,5 @@ Any error causes a panic, cascading errors are stacked and each reader is closed
 If you get a warning from `gopls/staticcheck` about dot-import, create a file named `staticcheck.conf` in your project directory (or parents) with:
 
 ```
-dot_import_whitelist = [ "github.com/xpetit/x/v2" ]
+dot_import_whitelist = [ "github.com/xpetit/x/v3" ]
 ```
-
-Other useful generic functions can be found at:
-
-- https://pkg.go.dev/golang.org/x/exp/slices
-- https://pkg.go.dev/golang.org/x/exp/maps

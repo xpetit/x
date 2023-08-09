@@ -1,18 +1,16 @@
 package x
 
 import (
+	"cmp"
 	"fmt"
 	"io"
 	"math"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
 	"unicode"
 	"unicode/utf8"
-
-	"golang.org/x/exp/constraints"
-	"golang.org/x/exp/slices"
-	"golang.org/x/text/unicode/rangetable"
 )
 
 var (
@@ -25,9 +23,18 @@ var (
 func InitUnicodeCategory() {
 	once.Do(func() {
 		cache = map[rune]string{}
-		for category, v := range unicode.Categories {
+		for category, rt := range unicode.Categories {
 			if len(category) == 2 {
-				rangetable.Visit(v, func(r rune) { cache[r] = category })
+				for _, r16 := range rt.R16 {
+					for r := rune(r16.Lo); r <= rune(r16.Hi); r += rune(r16.Stride) {
+						cache[r] = category
+					}
+				}
+				for _, r32 := range rt.R32 {
+					for r := rune(r32.Lo); r <= rune(r32.Hi); r += rune(r32.Stride) {
+						cache[r] = category
+					}
+				}
 			}
 		}
 	})
@@ -60,17 +67,11 @@ func keyString[T comparable](a T) string {
 	case string:
 		return a
 
-	case rune: // make it uncluttered, remove unecessary quotes and backslashes
-		s := strconv.QuoteRune(a)
-		switch s {
-		case `' '`:
-			return s
-		case `'\''`:
-			return `'`
-		case `'\\'`:
-			return `\`
+	case rune:
+		if a <= unicode.MaxASCII {
+			return string(a)
 		}
-		return s[1 : len(s)-1] // remove quotes, the rune is safely escaped anyway
+		return strconv.QuoteRune(a)
 	}
 
 	return fmt.Sprint(a)
@@ -89,7 +90,7 @@ func keyString[T comparable](a T) string {
 //	  3%    64405  Team Fortress 2                  [▍           ]
 //	  1%    21228  The Sims™ 4                      [▏           ]
 //	  0%     5564  Sekiro™: Shadows Die Twice       [            ]
-func BarChart[M ~map[K]V, K comparable, V constraints.Integer](w io.Writer, m M, maxItems int) {
+func BarChart[M ~map[K]V, K cmp.Ordered, V Integer](w io.Writer, m M, maxItems int) {
 	var total V
 	keys := make([]K, 0, len(m))
 	for k, v := range m {
@@ -104,7 +105,7 @@ func BarChart[M ~map[K]V, K comparable, V constraints.Integer](w io.Writer, m M,
 		if a == b {
 			return 0
 		}
-		if Less(a, b) {
+		if cmp.Less(a, b) {
 			return -1
 		}
 		return 1
@@ -207,7 +208,7 @@ loop:
 		}
 	}
 	for i, line := range lines {
-		lines[i] = line[Min(padding, len(line)):]
+		lines[i] = line[min(padding, len(line)):]
 	}
 	return strings.Join(lines, "\n")
 }

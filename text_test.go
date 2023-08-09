@@ -1,11 +1,10 @@
 package x_test
 
 import (
+	"slices"
 	"testing"
 
-	"github.com/xpetit/x/v2"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
+	"github.com/xpetit/x/v3"
 )
 
 func TestFormatByte(t *testing.T) {
@@ -71,7 +70,7 @@ func TestFormatByte(t *testing.T) {
 		999_499_999: "999 MB",
 		999_500_000: "1 GB",
 	}
-	keys := maps.Keys(expected)
+	keys := x.Keys(expected)
 	slices.Sort(keys)
 	for _, i := range keys {
 		want := expected[i]
