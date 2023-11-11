@@ -121,7 +121,7 @@ func BarChart[M ~map[K]V, K cmp.Ordered, V Integer](w io.Writer, m M, maxItems i
 	for i, k := range keys {
 		v := m[k]
 		const maxBarWidth = 12 * 8 // 12 terminal characters for 100% values
-		barWidth := int(math.Round(maxBarWidth * float64(v) / float64(total)))
+		barWidth := int(math.Round(maxBarWidth * float64(v) / float64(m[keys[0]])))
 		fmt.Fprintf(w, "%3.f%%  %*d  %-*s [%-*s]\n",
 			100*float64(v)/float64(total),
 			maxValueWidth, v,
