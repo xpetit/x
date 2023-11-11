@@ -16,3 +16,11 @@ func Shuffle[S ~[]E, E any](s S) {
 		s[i], s[j] = s[j], s[i]
 	}
 }
+
+func Set[S ~[]E, E comparable](s S) map[E]struct{} {
+	m := make(map[E]struct{}, len(s))
+	for _, v := range s {
+		m[v] = struct{}{}
+	}
+	return m
+}
