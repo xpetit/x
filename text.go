@@ -19,7 +19,7 @@ var (
 )
 
 // InitUnicodeCategory inits the cache for UnicodeCategory
-// It is exported so that the user can trigger cache building instead of waiting for the first call to UnicodeCategory
+// It is exported so that the user can trigger cache building instead of waiting for the first call to UnicodeCategory.
 func InitUnicodeCategory() {
 	once.Do(func() {
 		cache = map[rune]string{}
@@ -99,16 +99,7 @@ func BarChart[M ~map[K]V, K cmp.Ordered, V Integer](w io.Writer, m M, maxItems i
 	}
 
 	slices.SortFunc(keys, func(a, b K) int {
-		if m[a] != m[b] {
-			return int(m[b] - m[a])
-		}
-		if a == b {
-			return 0
-		}
-		if cmp.Less(a, b) {
-			return -1
-		}
-		return 1
+		return cmp.Compare(m[b], m[a])
 	})
 
 	if maxItems >= 0 && maxItems < len(keys) {
