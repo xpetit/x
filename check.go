@@ -2,37 +2,37 @@ package x
 
 import "fmt"
 
-// C panics if its argument is a non-nil error.
+// Check panics if its argument is a non-nil error.
 // Examples:
 //
-//	C(os.Chdir("directory"))
+//	Check(os.Chdir("directory"))
 //
-//	C(json.NewDecoder(os.Stdin).Decode(&data))
-func C(err error) {
+//	Check(json.NewDecoder(os.Stdin).Decode(&data))
+func Check(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
-// C2 panics if its second argument is a non-nil error and returns the first one.
+// Must panics if its second argument is a non-nil error and returns the first one.
 // Examples:
 //
-//	i := C2(strconv.Atoi("123"))
+//	i := Must(strconv.Atoi("123"))
 //
-//	f := C2(os.Open("file"))
-func C2[T any](a T, err error) T {
-	C(err)
+//	f := Must(os.Open("file"))
+func Must[T any](a T, err error) T {
+	Check(err)
 	return a
 }
 
-// C3 panics if its third argument is a non-nil error and returns the first two.
+// Must2 panics if its third argument is a non-nil error and returns the first two.
 // Examples:
 //
-//	img, _ := C3(image.Decode(f))
+//	img, _ := Must2(image.Decode(f))
 //
-//	_, port := C3(net.SplitHostPort(address))
-func C3[T1, T2 any](a T1, b T2, err error) (T1, T2) {
-	C(err)
+//	_, port := Must2(net.SplitHostPort(address))
+func Must2[T1, T2 any](a T1, b T2, err error) (T1, T2) {
+	Check(err)
 	return a, b
 }
 

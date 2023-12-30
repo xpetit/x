@@ -9,7 +9,7 @@ import (
 )
 
 func StdinIsPipe() bool {
-	mode := C2(os.Stdin.Stat()).Mode()
+	mode := Must(os.Stdin.Stat()).Mode()
 	return mode&os.ModeNamedPipe != 0 && mode&os.ModeCharDevice == 0
 }
 
@@ -25,7 +25,7 @@ func StdoutIsTerminal() bool {
 //
 //	defer Closing(f)
 func Closing(v io.Closer) {
-	C(v.Close())
+	Check(v.Close())
 }
 
 type (

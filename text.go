@@ -90,7 +90,7 @@ func keyString[T comparable](a T) string {
 //	  3%    64405  Team Fortress 2                  [▍           ]
 //	  1%    21228  The Sims™ 4                      [▏           ]
 //	  0%     5564  Sekiro™: Shadows Die Twice       [            ]
-func BarChart[M ~map[K]V, K cmp.Ordered, V Integer](w io.Writer, m M, maxItems int) {
+func BarChart[M ~map[K]V, K cmp.Ordered, V Number](w io.Writer, m M, title string, maxItems int) {
 	var total V
 	keys := make([]K, 0, len(m))
 	for k, v := range m {
@@ -99,7 +99,10 @@ func BarChart[M ~map[K]V, K cmp.Ordered, V Integer](w io.Writer, m M, maxItems i
 	}
 
 	slices.SortFunc(keys, func(a, b K) int {
-		return cmp.Compare(m[b], m[a])
+		if cmp := cmp.Compare(m[b], m[a]); cmp != 0 {
+			return cmp
+		}
+		return cmp.Compare(a, b)
 	})
 
 	if maxItems >= 0 && maxItems < len(keys) {
@@ -116,17 +119,17 @@ func BarChart[M ~map[K]V, K cmp.Ordered, V Integer](w io.Writer, m M, maxItems i
 		}
 	}
 
-	fmt.Fprintf(w, "100%%  %d  Total (%d entries)\n", total, len(m))
+	fmt.Fprintf(w, "100%%  %.f  Total %s (%d entries)\n", float64(total), title, len(m))
 	maxValueWidth := 1 + int(math.Log10(float64(total)))
 	for i, k := range keys {
-		v := m[k]
-		const maxBarWidth = 12 * 8 // 12 terminal characters for 100% values
-		barWidth := int(math.Round(maxBarWidth * float64(v) / float64(m[keys[0]])))
-		fmt.Fprintf(w, "%3.f%%  %*d  %-*s [%-*s]\n",
-			100*float64(v)/float64(total),
+		v := float64(m[k])
+		const maxBarWidth = 24
+		barWidth := int(math.Round(maxBarWidth * 8 * v / float64(m[keys[0]])))
+		fmt.Fprintf(w, "%3.f%%  %*.f  %-*s [%-*s]\n",
+			100*v/float64(total),
 			maxValueWidth, v,
 			maxKeyWidth, keyStrings[i],
-			12, UnicodeBar(barWidth),
+			maxBarWidth, UnicodeBar(barWidth),
 		)
 	}
 }
