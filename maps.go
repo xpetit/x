@@ -3,6 +3,7 @@ package x
 import (
 	"cmp"
 	"slices"
+	"sync"
 )
 
 // Has returns whether k is present in the map m.
@@ -53,4 +54,37 @@ func Values[M ~map[K]V, K comparable, V any](m M) []V {
 		r = append(r, v)
 	}
 	return r
+}
+
+type Protected[K comparable, V any] struct {
+	M    map[K]V
+	Lock sync.RWMutex
+	o    sync.Once
+}
+
+func (p *Protected[K, V]) Get(k K) (v V, ok bool) {
+	p.Lock.RLock()
+	v, ok = p.M[k]
+	p.Lock.RUnlock()
+	return
+}
+
+func (p *Protected[K, _]) Has(k K) bool {
+	p.Lock.RLock()
+	_, ok := p.M[k]
+	p.Lock.RUnlock()
+	return ok
+}
+
+func (p *Protected[K, V]) Set(k K, v V) {
+	p.Lock.Lock()
+	p.o.Do(func() { p.M = map[K]V{} })
+	p.M[k] = v
+	p.Lock.Unlock()
+}
+
+func (p *Protected[K, _]) Delete(k K) {
+	p.Lock.Lock()
+	delete(p.M, k)
+	p.Lock.Unlock()
 }
