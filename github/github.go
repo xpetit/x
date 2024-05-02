@@ -25,7 +25,9 @@ func (c Config) request(k, v string, values url.Values, data any) error {
 		return err
 	}
 	req.URL.RawQuery = values.Encode()
-	req.Header.Set("Authorization", "Bearer "+c.Token)
+	if c.Token != "" {
+		req.Header.Set("Authorization", "Bearer "+c.Token)
+	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
