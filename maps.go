@@ -88,3 +88,9 @@ func (p *Protected[K, _]) Delete(k K) {
 	delete(p.M, k)
 	p.Lock.Unlock()
 }
+
+func (p *Protected[K, V]) Do(fn func(map[K]V)) {
+	p.Lock.Lock()
+	fn(p.M)
+	p.Lock.Unlock()
+}
