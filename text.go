@@ -204,5 +204,8 @@ loop:
 	for i, line := range lines {
 		lines[i] = line[min(padding, len(line)):]
 	}
+	if lines[len(lines)-1] != "" {
+		lines = append(lines, "")
+	}
 	return strings.Join(lines, "\n")
 }
