@@ -38,3 +38,14 @@ func ToSet[S ~[]E, E comparable](s S) map[E]struct{} {
 	}
 	return m
 }
+
+func Map[S ~[]E, E, F any](s S, f func(E) F) []F {
+	if len(s) == 0 {
+		return nil
+	}
+	out := make([]F, len(s))
+	for i, v := range s {
+		out[i] = f(v)
+	}
+	return out
+}
