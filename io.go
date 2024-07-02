@@ -14,13 +14,24 @@ func CopyFile(src, dst string) (int64, error) {
 		return 0, err
 	}
 	defer srcF.Close()
+
+	st, err := srcF.Stat()
+	if err != nil {
+		return 0, err
+	}
+
 	dstF, err := os.Create(dst)
 	if err != nil {
 		return 0, err
 	}
 	defer dstF.Close()
+
 	written, err := io.Copy(dstF, srcF)
 	if err != nil {
+		return written, err
+	}
+
+	if err := dstF.Chmod(st.Mode()); err != nil {
 		return written, err
 	}
 	return written, dstF.Close()
