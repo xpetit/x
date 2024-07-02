@@ -8,6 +8,24 @@ import (
 	"golang.org/x/term"
 )
 
+func CopyFile(src, dst string) (int64, error) {
+	srcF, err := os.Open(src)
+	if err != nil {
+		return 0, err
+	}
+	defer srcF.Close()
+	dstF, err := os.Create(dst)
+	if err != nil {
+		return 0, err
+	}
+	defer dstF.Close()
+	written, err := io.Copy(dstF, srcF)
+	if err != nil {
+		return written, err
+	}
+	return written, dstF.Close()
+}
+
 func StdinIsPipe() bool {
 	mode := Must(os.Stdin.Stat()).Mode()
 	return mode&os.ModeNamedPipe != 0 && mode&os.ModeCharDevice == 0
