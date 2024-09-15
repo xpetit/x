@@ -32,3 +32,9 @@ func Clamp[T Number](val, min, max T) T {
 func Intn[T Integer](n T) T {
 	return T(Must(rand.Int(rand.Reader, big.NewInt(int64(n)))).Int64())
 }
+
+func RandomBytes(n int) []byte {
+	b := make([]byte, n)
+	Must(rand.Read(b))
+	return b
+}

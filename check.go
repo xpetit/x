@@ -47,3 +47,16 @@ func Assert(cond bool, a ...any) {
 		panic(s)
 	}
 }
+
+// AssertOK panics if cond is false.
+func AssertOK[T any](_ T, cond bool) {
+	if !cond {
+		panic("assertion failed")
+	}
+}
+
+type genericErr bool
+
+func (genericErr) Error() string { return "generic error" }
+
+const GenericError genericErr = false
