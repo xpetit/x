@@ -1,4 +1,4 @@
-module github.com/xpetit/x/v4
+module github.com/xpetit/x/v5
 
 go 1.23
 
