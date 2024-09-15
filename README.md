@@ -34,5 +34,5 @@ Any error causes a panic, cascading errors are stacked and each reader is closed
 If you get a warning from `gopls/staticcheck` about dot-import, create a file named `staticcheck.conf` in your project directory (or parents) with:
 
 ```
-dot_import_whitelist = [ "github.com/xpetit/x/v4" ]
+dot_import_whitelist = [ "github.com/xpetit/x/v5" ]
 ```

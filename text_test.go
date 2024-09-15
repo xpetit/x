@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/xpetit/x/v4"
+	"github.com/xpetit/x/v5"
 )
 
 func TestFormatByte(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/xpetit/x/v4"
+	"github.com/xpetit/x/v5"
 )
 
 type Config struct {
