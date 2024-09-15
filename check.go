@@ -48,11 +48,12 @@ func Assert(cond bool, a ...any) {
 	}
 }
 
-// AssertOK panics if cond is false.
-func AssertOK[T any](_ T, cond bool) {
-	if !cond {
+// AssertOK panics if ok is false. Otherwise, it returns the value.
+func AssertOK[T any](v T, ok bool) T {
+	if !ok {
 		panic("assertion failed")
 	}
+	return v
 }
 
 type genericErr bool
