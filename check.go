@@ -56,6 +56,31 @@ func AssertOK[T any](v T, ok bool) T {
 	return v
 }
 
+// AssertNotNil panics if v is nil. Otherwise, it returns the value.
+func AssertNotNil[T any](v *T) *T {
+	if v == nil {
+		panic("assertion failed")
+	}
+	return v
+}
+
+// AssertNonZero panics if v is a zero value. Otherwise, it returns the value.
+func AssertNonZero[T comparable](v T) T {
+	var z T
+	if v == z {
+		panic("assertion failed")
+	}
+	return v
+}
+
+// AssertPositive panics if v is not positive. Otherwise, it returns the value.
+func AssertPositive[T Number](v T) T {
+	if v > 0 {
+		return v
+	}
+	panic("assertion failed")
+}
+
 type genericErr bool
 
 func (genericErr) Error() string { return "generic error" }
