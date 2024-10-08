@@ -2,8 +2,11 @@ package x
 
 import (
 	"errors"
+	"fmt"
 	"io"
+	"io/fs"
 	"os"
+	"path/filepath"
 
 	"golang.org/x/term"
 )
@@ -35,6 +38,46 @@ func CopyFile(src, dst string) (int64, error) {
 		return written, err
 	}
 	return written, dstF.Close()
+}
+
+func CopyDir(src, dst, name string) error {
+	if name == "" {
+		name = filepath.Base(src)
+	}
+	dst = filepath.Join(dst, name)
+	var links [][2]string
+	if err := filepath.WalkDir(src, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(src, path)
+		if err != nil {
+			return err
+		}
+		newPath := filepath.Join(dst, rel)
+		if d.IsDir() {
+			return os.MkdirAll(newPath, 0o755)
+		} else if d.Type().IsRegular() {
+			_, err = CopyFile(path, newPath)
+			return err
+		} else if d.Type()&os.ModeSymlink != 0 {
+			target, err := os.Readlink(path)
+			if err != nil {
+				return err
+			}
+			links = append(links, [2]string{target, newPath})
+			return nil
+		}
+		return fmt.Errorf("unable to copy file: %s", path)
+	}); err != nil {
+		return err
+	}
+	for _, link := range links {
+		if err := os.Symlink(link[0], link[1]); err != nil && !os.IsExist(err) {
+			return err
+		}
+	}
+	return nil
 }
 
 func StdinIsPipe() bool {
