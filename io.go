@@ -40,11 +40,11 @@ func CopyFile(src, dst string) (int64, error) {
 	return written, dstF.Close()
 }
 
-func CopyDir(src, dst, name string) error {
-	if name == "" {
-		name = filepath.Base(src)
-	}
-	dst = filepath.Join(dst, name)
+// CopyDir copies the contents of src to dst
+// This function will be deprecated once os.CopyFS works with symlinks:
+//
+//	os.CopyFS(dst, os.DirFS(src))
+func CopyDir(src, dst string) error {
 	var links [][2]string
 	if err := filepath.WalkDir(src, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
