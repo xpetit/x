@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"golang.org/x/term"
 )
@@ -89,15 +90,25 @@ func StdoutIsTerminal() bool {
 	return term.IsTerminal(int(os.Stdout.Fd()))
 }
 
-// Closing is a shortcut, instead of writing:
+// Closing
+// Deprecated: use [x.Close].
+func Closing(v io.Closer) { Close(v) }
+
+var closed sync.Map
+
+// Close is a shortcut, instead of writing:
 //
 //	defer func() { C(f.Close()) }()
 //
 // One can write:
 //
-//	defer Closing(f)
-func Closing(v io.Closer) {
-	Check(v.Close())
+//	defer Close(f)
+//
+// If it is called more than once, it is a no-op
+func Close(v io.Closer) {
+	if _, ok := closed.LoadOrStore(v, struct{}{}); !ok {
+		Check(v.Close())
+	}
 }
 
 type (
