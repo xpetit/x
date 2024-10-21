@@ -6,7 +6,7 @@ import (
 	"os/exec"
 )
 
-// Run is similar to (*exec.Cmd).Run() but conveniently wraps exec.ExitError with stderr:
+// Run is similar to (*exec.Cmd).Run() but conveniently wraps exec.ExitError with stdout & stderr:
 //
 //	err1 := exec.Command("go", "run").Run() // standard way
 //	err2 := Run(exec.Command("go", "run"))  // with this function
@@ -20,11 +20,12 @@ import (
 //		fmt.Println(err.UserTime())
 //	}
 func Run(c *exec.Cmd) error {
-	var stderr bytes.Buffer
-	c.Stderr = &stderr
+	var out bytes.Buffer
+	c.Stdout = &out
+	c.Stderr = &out
 	err := c.Run()
 	if err, ok := err.(*exec.ExitError); ok {
-		err.Stderr = bytes.TrimSpace(stderr.Bytes())
+		err.Stderr = bytes.TrimSpace(out.Bytes())
 		if len(err.Stderr) > 0 {
 			return fmt.Errorf("%w: %s", err, err.Stderr)
 		}
