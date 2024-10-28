@@ -68,7 +68,7 @@ func keyString[T comparable](a T) string {
 		return a
 
 	case rune:
-		if a <= unicode.MaxASCII {
+		if a <= unicode.MaxASCII && !unicode.IsSpace(a) && unicode.IsGraphic(a) {
 			return string(a)
 		}
 		return strconv.QuoteRune(a)
