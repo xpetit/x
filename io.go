@@ -1,6 +1,7 @@
 package x
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -155,4 +156,12 @@ func CloseAfterRead(r io.ReadCloser) io.Reader {
 		return closeAfterReaderWriterTo{r}
 	}
 	return closeAfterReader{r}
+}
+
+func DecodeJSON(r io.Reader, v any) error {
+	b, err := io.ReadAll(r)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(b, v)
 }
