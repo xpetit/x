@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-var start = time.Now().UTC()
+var StartTime = time.Now().UTC()
 
 func DebugInfos() string {
 	bi := AssertOK(debug.ReadBuildInfo())
@@ -28,7 +28,7 @@ func DebugInfos() string {
 	fmt.Fprintln(tw, "CGo calls:\t", runtime.NumCgoCall())
 	fmt.Fprintln(tw, "Go version:\t", bi.GoVersion)
 	fmt.Fprintln(tw, "Path:\t", bi.Path)
-	fmt.Fprintf(tw, "Start:\t %s (running for %s)\n", start.Format(time.DateTime), time.Since(start).Round(time.Second))
+	fmt.Fprintf(tw, "Start:\t %s (running for %s)\n", StartTime.Format(time.DateTime), time.Since(StartTime).Round(time.Second))
 	fmt.Fprintf(tw, "Memory in use:\t %.fMB\n", float64(ms.StackInuse+ms.HeapIdle+ms.HeapInuse-ms.HeapReleased)/1e6)
 	fmt.Fprintln(tw)
 	fmt.Fprintln(tw, "Build settings:")
