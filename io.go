@@ -99,7 +99,7 @@ var closed sync.Map
 
 // Close is a shortcut, instead of writing:
 //
-//	defer func() { C(f.Close()) }()
+//	defer func() { Check(f.Close()) }()
 //
 // One can write:
 //
