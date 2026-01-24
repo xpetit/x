@@ -55,7 +55,7 @@ func DebugInfos() string {
 			slices.SortFunc(indexes, func(a, b int) int { return cmp.Compare(gcs.Pause[b], gcs.Pause[a]) })
 			indexes = indexes[:min(6, len(indexes))]
 			for _, i := range indexes {
-				fmt.Fprintf(tw, "\t0.%06ds  %s\t\n", gcs.Pause[i].Microseconds(), gcs.PauseEnd[i].UTC().Format(time.DateTime))
+				fmt.Fprintf(tw, "\t%.3fms  %s\t\n", gcs.Pause[i].Seconds()*1000, gcs.PauseEnd[i].UTC().Format(time.DateTime))
 			}
 		}
 	}
