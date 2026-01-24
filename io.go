@@ -143,14 +143,14 @@ func (c closeAfterReaderWriterTo) WriteTo(w io.Writer) (int64, error) {
 //
 //	// Prints SHA2 of "file_to_hash" in hexadecimal notation
 //	h := sha256.New()
-//	C2(io.Copy(h, CloseAfterRead(C2(os.Open("file_to_hash")))))
+//	Must(io.Copy(h, CloseAfterRead(Must(os.Open("file_to_hash")))))
 //	fmt.Println(hex.EncodeToString(h.Sum(nil)))
 //
 //	// Downloads a file
 //	const url = "https://go.dev/dl/go1.20.2.linux-amd64.tar.gz"
-//	dst := C2(os.Create(path.Base(url)))
+//	dst := Must(os.Create(path.Base(url)))
 //	defer Closing(dst)
-//	C2(io.Copy(dst, CloseAfterRead(C2(http.Get(url)).Body)))
+//	Must(io.Copy(dst, CloseAfterRead(Must(http.Get(url)).Body)))
 func CloseAfterRead(r io.ReadCloser) io.Reader {
 	if _, ok := r.(io.WriterTo); ok {
 		return closeAfterReaderWriterTo{r}
