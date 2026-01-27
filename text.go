@@ -49,7 +49,7 @@ func UnicodeCategory(r rune) (name string) {
 
 func AppendUnicodeBar(b []byte, width int) []byte {
 	b = slices.Grow(b, 3*((7+width)/8))
-	for i := 0; i < width/8; i++ {
+	for range width / 8 {
 		b = utf8.AppendRune(b, '█')
 	}
 	if rem := width % 8; rem > 0 {
