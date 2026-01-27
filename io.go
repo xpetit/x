@@ -91,10 +91,6 @@ func StdoutIsTerminal() bool {
 	return term.IsTerminal(int(os.Stdout.Fd()))
 }
 
-// Closing
-// Deprecated: use [x.Close].
-func Closing(v io.Closer) { Close(v) }
-
 var closed sync.Map
 
 // Close is a shortcut, instead of writing:
