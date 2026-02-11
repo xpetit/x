@@ -47,7 +47,7 @@ func Skip2[K, V any](n int, seq iter.Seq2[K, V]) iter.Seq2[K, V] {
 	return func(yield func(K, V) bool) {
 		next, stop := iter.Pull2(seq)
 		defer stop()
-		for i := 0; i < n; i++ {
+		for range n {
 			if _, _, ok := next(); !ok {
 				return
 			}
