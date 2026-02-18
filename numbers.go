@@ -19,15 +19,6 @@ type (
 	}
 )
 
-func Clamp[T Number](val, min, max T) T {
-	if val < min {
-		return min
-	} else if val > max {
-		return max
-	}
-	return val
-}
-
 // Intn returns a uniform random value in [0, n). It panics if n <= 0.
 func Intn[T Integer](n T) T {
 	return T(Must(rand.Int(rand.Reader, big.NewInt(int64(n)))).Int64())
