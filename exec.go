@@ -16,7 +16,7 @@ import (
 //
 // The underlying *exec.ExitError remains recoverable:
 //
-//	if err := new(exec.ExitError); errors.As(err2, &err) {
+//	if err, ok := errors.AsType[*exec.ExitError](err2); ok {
 //		fmt.Println(err.UserTime())
 //	}
 func Run(c *exec.Cmd) error {
@@ -43,7 +43,7 @@ func Run(c *exec.Cmd) error {
 //
 // The underlying *exec.ExitError remains recoverable:
 //
-//	if err := new(exec.ExitError); errors.As(err2, &err) {
+//	if err, ok := errors.AsType[*exec.ExitError](err2); ok {
 //		fmt.Println(err.UserTime())
 //	}
 func Output(c *exec.Cmd) ([]byte, error) {
